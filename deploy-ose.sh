@@ -37,10 +37,12 @@
 # Add/delete/modify according to your environment: 
 # 
 DOMAIN="interop.example.com" 
-BROKER1="xbroker1.${DOMAIN}" 
-BROKER2="xbroker2.${DOMAIN}" 
-NODE1="xnode1.${DOMAIN}" 
-NODE2="xnode2.${DOMAIN}" 
+BROKER1="broker1.${DOMAIN}" 
+BROKER2="broker2.${DOMAIN}" 
+BROKER3="broker3.${DOMAIN}" 
+NODE1="node1.${DOMAIN}" 
+NODE2="node2.${DOMAIN}" 
+NODE3="node3.${DOMAIN}" 
 
 
 # 
@@ -61,8 +63,8 @@ export CONF_BROKER_HOSTNAME="${BROKER_HOSTNAME}"
 export CONF_ACTIVEMQ_HOSTNAME="${BROKER_HOSTNAME}" 
 
 # Add/delete according to the number of brokers in your environment: 
-export CONF_ACTIVEMQ_REPLICANTS="${BROKER1},${BROKER2}" 
-export CONF_DATASTORE_REPLICANTS="${BROKER1}:27017,${BROKER2}:27017" 
+export CONF_ACTIVEMQ_REPLICANTS="${BROKER1},${BROKER2},${BROKER3}" 
+export CONF_DATASTORE_REPLICANTS="${BROKER1}:27017,${BROKER2}:27017,${BROKER3}:27017" 
 
 # 
 # Set username/passwords according to your environment security policies: 
