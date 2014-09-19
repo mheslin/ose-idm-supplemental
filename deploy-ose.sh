@@ -2,7 +2,7 @@
 
 #------------------------------------------------------------------------------------# 
 # File: deploy-ose.sh                                                                # 
-# Date: 2014-07-18                                                                   # 
+# Date: 2014-09-18                                                                   # 
 # Desc: Script to simplify deployment of OpenShift Enterprise across a distributed   #
 #       (e.g. 3 broker, 3 node) environment. Script uses a small set of environment  #
 #       variables (described below) that are passed to openshift.sh.                 #
@@ -15,16 +15,23 @@
 #             - CONF_NAMED_IP_ADDR=ip_address_of_IdM_server                          # 
 #             - CONF_ACTIVEMQ_REPLICANTS   (add/delete to match number of brokers)   #
 #             - CONF_DATASTORE_REPLICANTS  (add/delete to match number of brokers)   #
-#          3. Set the script execute permissions (e.g. chmod 755, chmod u+x, etc.)   # 
-#          4. Copy this script to each of the remaining broker hosts, node hosts     # 
-#          5. Run the script as root on each host according to type, in this order:  # 
+#          3. For Node hosts only:                                                   # 
+#             If a load balancer is in use for broker hosts, then configure 'broker' #
+#             to that name:                                                          #
+#                           export BROKER_HOSTNAME="broker.${DOMAIN}"                # 
+#             otherwise, set to any valid broker host name:                          #
+#                           export BROKER_HOSTNAME="broker1.${DOMAIN}"               #
+#             Only set this value at line 137 in the script.                         # 
+#          4. Set the script execute permissions (e.g. chmod 755, chmod u+x, etc.)   # 
+#          5. Copy this script to each of the remaining broker hosts, node hosts     # 
+#          6. Run the script as root on each host according to type, in this order:  # 
 #             - Secondary broker hosts:                                              # 
 #                    ./deploy-ose.sh secondary (e.g. - broker2, broker3, etc.)       # 
 #             - Primary broker host:                                                 # 
 #                    ./deploy-ose.sh primary   (e.g. - broker1)                      # 
 #             - All node hosts:                                                      # 
 #                    ./deploy-ose.sh node      (e.g. - node1, node2, etc.)           # 
-#          6. Post deployment, run the script as root on the Primary broker host:    #
+#          7. Post deployment, run the script as root on the Primary broker host:    #
 #             - Primary broker host only:                                            #
 #                    ./deploy-ose.sh post-deploy                                     # 
 # Note: Script is provided as a supplement to the Red Hat Reference Architecture:    # 
@@ -60,7 +67,8 @@ export CONF_KEEP_HOSTNAME="true"
 export CONF_NAMED_IP_ADDR="10.19.140.101"
 export BROKER_HOSTNAME=`/bin/hostname`
 export CONF_BROKER_HOSTNAME="${BROKER_HOSTNAME}" 
-export CONF_ACTIVEMQ_HOSTNAME="${BROKER_HOSTNAME}" 
+export CONF_ACTIVEMQ_HOSTNAME=`/bin/hostname`
+export CONF_DATASTORE_HOSTNAME=`/bin/hostname`
 
 # Add/delete according to the number of brokers in your environment: 
 export CONF_ACTIVEMQ_REPLICANTS="${BROKER1},${BROKER2},${BROKER3}" 
@@ -125,6 +133,8 @@ case $1 in
     export CONF_ACTIONS="do_all_actions"
     NODE=`/bin/hostname`
     export CONF_NODE_HOSTNAME="${NODE}" 
+    # Adjust accordingly to match whether or not load balancer in use:
+    export BROKER_HOSTNAME="broker.${DOMAIN}"
     ;; 
 
   post-deploy) 
@@ -180,4 +190,3 @@ else
 fi
 
 exit 0
-
